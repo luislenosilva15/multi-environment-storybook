@@ -47,5 +47,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.SECRET }}
-          publish-branch: ${{ github.ref_slug }}-env
+          external_repository: ${{ github.repository_owner }}/${{ env.PR_REPO_NAME }}
           publish_dir: ./build
