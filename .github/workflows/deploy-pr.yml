@@ -1,7 +1,7 @@
 name: Deploy Storybook
 
 on:
-  pull_request:
+  push:
     branches:
       - pag2
 
@@ -17,14 +17,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Get current date and time
-        id: datetime
-        run: echo "::set-output name=date::$(date +%Y%m%d_%H%M%S)"
-
-      - name: Get PR number
-        id: pr_number
-        run: echo "::set-output name=number::$(echo $GITHUB_REF | awk 'BEGIN {FS="/"} {print $3}')"
-
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -38,18 +30,10 @@ jobs:
       - name: Build Storybook
         run: yarn build
 
-      - name: Create versioned directory
-        run: mkdir "./build/${{ steps.datetime.outputs.date }}_PR${{ steps.pr_number.outputs.number }}"
-
-      - name: Copy build to versioned directory
-        run: rsync -av "./build/" "./build/${{ steps.datetime.outputs.date }}_PR${{ steps.pr_number.outputs.number }}/"
-
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: build
           path: "./build"
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
