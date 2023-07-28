@@ -17,6 +17,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Get current date and time
+        id: datetime
+        run: echo "::set-output name=date::$(date +%Y%m%d_%H%M%S)"
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -30,10 +34,18 @@ jobs:
       - name: Build Storybook
         run: yarn build
 
+      - name: Create versioned directory
+        run: mkdir "./build/${{ steps.datetime.outputs.date }}"
+
+      - name: Copy build to versioned directory
+        run: cp -r "./build" "./build/${{ steps.datetime.outputs.date }}"
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
+          name: build
           path: "./build"
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
