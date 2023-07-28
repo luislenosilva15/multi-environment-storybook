@@ -20,7 +20,7 @@ jobs:
         with:
           name: ${{ env.PR_REPO_NAME }}
           org: ${{ github.repository_owner }}
-          access-token: ${{ secrets.PAT }}
+          access-token: ${{ secrets.SECRET }}
 
   pr-build-deploy:
     permissions:
@@ -46,6 +46,6 @@ jobs:
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          personal_token: ${{ secrets.PAT }}
+          personal_token: ${{ secrets.SECRET }}
           external_repository: ${{ github.repository_owner }}/${{ env.PR_REPO_NAME }}
           publish_dir: ./build
