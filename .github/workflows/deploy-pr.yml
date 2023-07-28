@@ -1,51 +1,39 @@
-name: Pull Request Build and Deploy
+name: Deploy Storybook
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
-    paths-ignore:
-      - ".github/workflows/**"
-      - "**.md"
+      - pag
 
-env:
-  PR_REPO_NAME: app-pr-${{ github.event.pull_request.node_id }}
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  create-page-host:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create new repository for temporary deployment
-        uses: mktcode/create-repository-action@v1
-        with:
-          name: ${{ env.PR_REPO_NAME }}
-          org: ${{ github.repository_owner }}
-          access-token: ${{ secrets.PAT }}
-
-  pr-build-deploy:
-    permissions:
-      contents: write
-    needs: create-page-host
-    runs-on: ubuntu-latest
+  build-and-deploy:
     environment:
-      name: pr-staging-${{ github.event.pull_request.node_id }}
-      url: https://${{ github.repository_owner }}.github.io/${{ env.PR_REPO_NAME }}
-
+      name: staging
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: "yarn"
 
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
-        env:
-          CI: false
+      - name: Install dependencies
+        run: yarn
 
-      - name: deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Build Storybook
+        run: yarn build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          personal_token: ${{ secrets.PAT }}
-          external_repository: ${{ github.repository_owner }}/${{ env.PR_REPO_NAME }}
-          publish_dir: ./build
+          path: "./build"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
