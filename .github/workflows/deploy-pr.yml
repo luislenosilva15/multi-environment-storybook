@@ -1,51 +1,34 @@
-name: Pull Request Build and Deploy
+name: Deploy Environments
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
-    paths-ignore:
-      - ".github/workflows/**"
-      - "**.md"
-
-env:
-  PR_REPO_NAME: app-pr-${{ github.event.pull_request.node_id }}
+      - "*"
 
 jobs:
-  create-page-host:
+  deploy:
+    name: Deploy to Environment
     runs-on: ubuntu-latest
-    steps:
-      - name: Create new repository for temporary deployment
-        uses: mktcode/create-repository-action@v1
-        with:
-          name: ${{ env.PR_REPO_NAME }}
-          org: ${{ github.repository_owner }}
-          access-token: ${{ secrets.SECRET }}
-
-  pr-build-deploy:
-    permissions:
-      contents: write
-    needs: create-page-host
-    runs-on: ubuntu-latest
-    environment:
-      name: pr-staging-${{ github.event.pull_request.node_id }}
-      url: https://${{ github.repository_owner }}.github.io/${{ env.PR_REPO_NAME }}
+    enviroment: gh-pages
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: 16
-          cache: "yarn"
+          node-version: "14"
 
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
-        env:
-          CI: false
+      - name: Install Dependencies
+        run: npm install
 
-      - name: deploy to gh-pages
+      - name: Build
+        run: npm run build
+
+      - name: Deploy to Environment
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.SECRET }}
-          external_repository: ${{ github.repository_owner }}/${{ env.PR_REPO_NAME }}
-          publish_dir: ./build
+          publish-dir: ./build # Diretório onde está o site estático gerado
+          publish-branch: ${{ github.ref_slug }}-env # Nome da branch do ambiente
