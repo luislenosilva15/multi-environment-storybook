@@ -22,5 +22,5 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.SECRET }}
           publish_dir: ./build # Substitua este caminho pelo diretório de saída do build do seu site estático
