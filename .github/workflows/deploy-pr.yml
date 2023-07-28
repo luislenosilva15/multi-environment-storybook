@@ -3,7 +3,7 @@ name: Deploy Storybook
 on:
   push:
     branches:
-      - pag2
+      - page5
 
 permissions:
   contents: read
@@ -13,7 +13,7 @@ permissions:
 jobs:
   build-and-deploy:
     environment:
-      name: pag2
+      name: page5
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +23,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "./build2"
+          path: "./build5"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
