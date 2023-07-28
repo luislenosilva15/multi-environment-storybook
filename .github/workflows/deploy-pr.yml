@@ -47,5 +47,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PAT }}
-          external_repository: ${{ github.repository_owner }}/${{ env.PR_REPO_NAME }}
+          external_repository: ${{ github.repository_owner }}/ pr-staging
           publish_dir: ./build
