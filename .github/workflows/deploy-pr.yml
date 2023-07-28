@@ -38,7 +38,7 @@ jobs:
         run: mkdir "./build/${{ steps.datetime.outputs.date }}"
 
       - name: Copy build to versioned directory
-        run: cp -r "./build" "./build/${{ steps.datetime.outputs.date }}"
+        run: cp -r "./build" "./build/${{ steps.datetime.outputs.date }}/"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
