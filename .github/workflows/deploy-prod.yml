@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     # environment:
     #   name: production
-    #  w url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+    #   url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
 
     steps:
       - uses: actions/checkout@v3

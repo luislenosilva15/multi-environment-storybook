@@ -9,7 +9,7 @@ on:
       - "**.md"
 
 env:
-  PR_REPO_NAME: gh-pages
+  PR_REPO_NAME: app-pr-${{ github.event.pull_request.node_id }}
 
 jobs:
   create-page-host:
@@ -18,7 +18,7 @@ jobs:
       - name: Create new repository for temporary deployment
         uses: mktcode/create-repository-action@v1
         with:
-          name: gh-pages
+          name: ${{ env.PR_REPO_NAME }}
           org: ${{ github.repository_owner }}
           access-token: ${{ secrets.PAT }}
 
@@ -28,8 +28,8 @@ jobs:
     needs: create-page-host
     runs-on: ubuntu-latest
     environment:
-      name: pr-staging-${{ github.event.pull_request.node_id }}
-      url: https://${{ github.repository_owner }}.github.io/gh-pages
+      name: pr-staging
+      url: https://${{ github.repository_owner }}.github.io/${{ env.PR_REPO_NAME }}
 
     steps:
       - uses: actions/checkout@v3
@@ -47,5 +47,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PAT }}
-          external_repository: ${{ github.repository_owner }}/gh-pages
+          external_repository: ${{ github.repository_owner }}/${{ env.PR_REPO_NAME }}
           publish_dir: ./build
