@@ -28,6 +28,7 @@ jobs:
       - name: Deploy to Environment
         uses: peaceiris/actions-gh-pages@v3
         with:
+          personal_token: ${{ secrets.SECRET }}
           publish-dir: ./build # Diretório onde está o site estático gerado
           publish-branch: ${{ github.ref }}-env # Nome da branch do ambiente
 
