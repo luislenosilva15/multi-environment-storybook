@@ -1,26 +1,51 @@
-name: Deploy to GitHub Pages
+name: Pull Request Build and Deploy
 
 on:
-  push:
+  pull_request:
     branches:
-      - page # Defina aqui a branch de origem que deseja monitorar para implantação (pode ser outra branch que você usa como base).
+      - main
+    paths-ignore:
+      - ".github/workflows/**"
+      - "**.md"
+
+env:
+  PR_REPO_NAME: app-pr-${{ github.event.pull_request.node_id }}
 
 jobs:
-  deploy:
+  create-page-host:
     runs-on: ubuntu-latest
+    steps:
+      - name: Create new repository for temporary deployment
+        uses: mktcode/create-repository-action@v1
+        with:
+          name: ${{ env.PR_REPO_NAME }}
+          org: ${{ github.repository_owner }}
+          access-token: ${{ secrets.SECRET }}
+
+  pr-build-deploy:
+    permissions:
+      contents: write
+    needs: create-page-host
+    runs-on: ubuntu-latest
+    environment:
+      name: pr-staging-${{ github.event.pull_request.node_id }}
+      url: https://${{ github.repository_owner }}.github.io/${{ env.PR_REPO_NAME }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "yarn"
 
-      - name: Build your site # Substitua este comando pelo comando para construir seu site estático, se necessário.
-        run: |
-          # Exemplo para um site construído com npm e React
-          yarn install
-          yarn run build
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+        env:
+          CI: false
 
-      - name: Deploy to GitHub Pages
+      - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.SECRET }}
-          publish_dir: ./build # Substitua este caminho pelo diretório de saída do build do seu site estático
+          personal_token: ${{ secrets.SECRET }}
+          external_repository: ${{ github.repository_owner }}/${{ env.PR_REPO_NAME }}
+          publish_dir: ./build
