@@ -1,11 +1,11 @@
 name: Delete Pull Request Deployment
 on:
   pull_request:
-    branches: [ main ]
-    types: [ closed ]
+    branches: [main]
+    types: [closed]
     paths-ignore:
-      - '.github/workflows/**'
-      - '**.md'
+      - ".github/workflows/**"
+      - "**.md"
 
 env:
   PR_REPO_NAME: app-pr-${{ github.event.pull_request.node_id }}

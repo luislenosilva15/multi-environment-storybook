@@ -3,10 +3,10 @@ name: Pull Request Build and Deploy
 on:
   pull_request:
     branches:
-      - main
+      - master
     paths-ignore:
-      - '.github/workflows/**'
-      - '**.md'
+      - ".github/workflows/**"
+      - "**.md"
 
 env:
   PR_REPO_NAME: app-pr-${{ github.event.pull_request.node_id }}
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: "yarn"
 
       - run: yarn install --frozen-lockfile
       - run: yarn build
