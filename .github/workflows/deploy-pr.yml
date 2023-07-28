@@ -9,7 +9,7 @@ jobs:
   deploy:
     name: Deploy to Environment
     runs-on: ubuntu-latest
-    enviroment: gh-pages
+    # enviroment: gh-pages
 
     steps:
       - name: Checkout Repository
